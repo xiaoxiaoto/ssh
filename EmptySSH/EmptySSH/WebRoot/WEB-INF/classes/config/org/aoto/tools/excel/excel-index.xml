@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xsi:schemaLocation="    
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans-4.0.xsd  
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-4.0.xsd  
+        http://www.springframework.org/schema/jee
+        http://www.springframework.org/schema/jee/spring-jee-4.0.xsd  
+   ">
+<bean id="createExcel" class="org.aoto.tools.excel.base.impl.CreateExcel"/>
+
+<bean id="readExcel" class="org.aoto.tools.excel.base.impl.ReadExcel"/>
+
+<bean id="database2Excel" class="org.aoto.tools.excel.database2excel.impl.Database2Excel"
+p:createExcel-ref="createExcel"
+p:jdbcBaseSerives-ref="jdbcBaseServices"
+/>
+
+<bean id="excel2Database" class="org.aoto.tools.excel.excel2database.impl.Excel2Database"
+p:readExcel-ref="readExcel"
+p:jdbcBaseSerives-ref="jdbcBaseServices"
+/>
+	
+</beans>

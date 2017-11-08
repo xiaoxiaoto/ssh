@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xsi:schemaLocation="    
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans-4.0.xsd  
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-4.0.xsd  
+        http://www.springframework.org/schema/jee
+        http://www.springframework.org/schema/jee/spring-jee-4.0.xsd  
+   ">
+	
+<bean id="connectionFactoryBean" class="org.aoto.tools.arcgis.ConnectionFactoryBean"
+	p:service_server="${sde.service_server}"
+	p:service_instance="${sde.service_instance}"
+	p:service_database ="${sde.service_database}"
+	p:service_username="${sde.service_username}"
+	p:service_password="${sde.service_password}"
+	p:direct_server="${sde.direct_server}"
+	p:direct_instance="${sde.direct_instance}"
+	p:direct_database ="${sde.direct_database}"
+	p:direct_username="${sde.direct_username}"
+	p:direct_password="${sde.direct_password}"
+	/>
+	
+</beans>

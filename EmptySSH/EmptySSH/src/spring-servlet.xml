@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+                    http://www.springframework.org/schema/beans
+                    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+                    http://www.springframework.org/schema/context
+                    http://www.springframework.org/schema/context/spring-context-3.0.xsd 
+                    http://www.springframework.org/schema/mvc
+                    http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+                    http://www.springframework.org/schema/task
+                    http://www.springframework.org/schema/task/spring-task-3.0.xsd
+                    ">
+
+	<!-- 注解扫描包 -->
+	<context:component-scan base-package="org.aoto.*" />
+
+	<!-- 开启注解 -->
+	<mvc:annotation-driven />
+
+	<!-- 静态资源的访问 -->
+	<!-- <mvc:resources location="/resources/css/" mapping="/resources/css/**"/> -->
+	<!-- <mvc:resources location="/resources/script/" mapping="/resources/script/**"/> -->
+	<!-- <mvc:resources location="/resources/images/" mapping="/resources/images/**"/> -->
+
+
+
+	<!-- 定义视图分发器 -->
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+		p:order="1" p:prefix="/view/" p:suffix=".jsp" />
+
+	<!-- JasperReports报表视图分发器 -->
+	 <bean id="reportViewResolver" class="org.springframework.web.servlet.view.XmlViewResolver"
+	  p:order="0"
+	  p:location="classpath:spring-jasperreports.xml"/>
+
+
+	<!-- 处理文件上传 -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="defaultEncoding" value="UTF-8" />
+		<property name="maxUploadSize" value="-1" />
+	</bean>
+
+	<!-- 配置拦截器 -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/user/*" />
+			<bean class="org.aoto.interceptor.LoginedInterceptor"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+
+	<!-- 定时器配置 task:executor/@pool-size：可以指定执行线程池的初始大小、最大大小 task:executor/@queue-capacity：等待执行的任务队列的容量 
+		task:executor/@rejection-policy：当等待队已满时的策略，分为丢弃、由任务执行器直接运行等方式 -->
+	<task:scheduler id="scheduler" pool-size="10" />
+	<task:executor id="executor" keep-alive="3600" pool-size="100-200"
+		queue-capacity="500" rejection-policy="CALLER_RUNS" />
+	<task:annotation-driven executor="executor"
+		scheduler="scheduler" />
+
+
+	<!-- 配置服务器端验证 <bean id="validatemessageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource" 
+		p:basename="resources/validatemessages" p:fileEncodings="UTF-8" p:cacheSeconds="120" 
+		/> <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" 
+		p:providerClass="org.hibernate.validator.HibernateValidator" p:validationMessageSource-ref="validatemessageSource" 
+		/> <bean id="conversion-service" class="org.springframework.format.support.FormattingConversionServiceFactoryBean" 
+		/> <mvc:annotation-driven validator="validator" /> -->
+
+
+</beans>

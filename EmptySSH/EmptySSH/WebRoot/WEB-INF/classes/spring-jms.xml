@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+                    http://www.springframework.org/schema/beans
+                    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+                    http://www.springframework.org/schema/context
+                    http://www.springframework.org/schema/context/spring-context-3.0.xsd 
+                    http://www.springframework.org/schema/mvc
+                    http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+                    http://www.springframework.org/schema/task
+                    http://www.springframework.org/schema/task/spring-task-3.0.xsd
+                    ">
+<!--加载ActiveMQConnectionFactory到Spring容器 -->
+<bean id="targetConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory"
+p:brokerURL="${activemq.brokerURL}"
+p:closeTimeout="${activemq.closeTimeout}"
+p:userName="${activemq.userName}"
+p:password="${activemq.password}"
+p:maxThreadPoolSize="${activemq.maxThreadPoolSize}"
+p:sendTimeout="${activemq.sendTimeout}"
+/>
+
+<!-- Spring中管理Connection的ConnectionFactory，用于管理不同的JMS服务厂商的 ConnectionFactory-->
+<bean id="connectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory" 
+p:targetConnectionFactory-ref="targetConnectionFactory"
+p:sessionCacheSize="${activemq.sessionCacheSize}"
+/>
+
+
+<!-- 定义消息队列 -->
+      <bean id="queueDestination" class="org.apache.activemq.command.ActiveMQQueue"> 
+              <!-- 设置消息队列的名字 -->       
+                <constructor-arg>
+                              <value>${activemq.destination}</value>
+                 </constructor-arg>     
+      </bean> 
+<!-- 定义消息队列 -->
+      <bean id="topicDestination" class="org.apache.activemq.command.ActiveMQTopic"> 
+              <!-- 设置消息队列的名字 -->       
+                <constructor-arg>
+                              <value>${activemq.destination}</value>
+                 </constructor-arg>     
+      </bean> 
+<!-- Spring提供的JMS工具类，它可以进行消息发送、接收等 -->
+
+<!-- JMS工具类(非pub/sub模型（发布/订阅）p2p队列) -->
+<bean id="jmsQueueTemplate" class="org.springframework.jms.core.JmsTemplate"
+p:connectionFactory-ref="connectionFactory"
+p:defaultDestination-ref="queueDestination"
+p:receiveTimeout="${activemq.receiveTimeout}"
+p:pubSubDomain="false"
+/>
+<!-- JMS工具类(为pub/sub模型（发布/订阅) ）-->
+<!-- <bean id="jmsTopicTemplate" class="org.springframework.jms.core.JmsTemplate"
+p:connectionFactory-ref="connectionFactory"
+p:receiveTimeout="${activemq.receiveTimeout}"
+p:pubSubDomain="true"
+/> -->
+
+ 
+ <!-- 消息队列监听处理类 -->
+ <bean id="queueListener" class="org.aoto.activemq.listener.QueueListener"/>
+ <!-- Spring提供的JMS工具类，消息监听。 messageListener监听处理类-->
+ <!--添加队列监听  -->
+<bean id="jmsQueueContainer"  class="org.springframework.jms.listener.DefaultMessageListenerContainer"
+p:connectionFactory-ref="connectionFactory"
+p:destination-ref="queueDestination" 
+p:messageListener-ref="queueListener"/> 
+ 
+ <!--添加pub/sub模型（发布/订阅)监听  -->
+<!-- <bean id="jmsTopicContainer"  class="org.springframework.jms.listener.DefaultMessageListenerContainer"
+p:connectionFactory-ref="connectionFactory"
+p:destination-ref="topicDestination" 
+p:messageListener-ref="queueListener"/>   -->
+
+
+
+</beans>
